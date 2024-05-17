@@ -8,7 +8,6 @@ class CalendarsController < ApplicationController
 
   # 予定の保存
   def create
-    binding.pry
     Plan.create(plan_params)
     redirect_to action: :index
   end
@@ -20,11 +19,11 @@ class CalendarsController < ApplicationController
   end
 
   def getWeek
-    wdays = ['(日)','(月)','(火)','(水)','(木)','(金)','(土)']
-
-    # Dateオブジェクトは、日付を保持しています。下記のように`.today.day`とすると、今日の日付を取得できます。
+    wdays = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)']
     @todays_date = Date.today
-    # 例)　今日が2月1日の場合・・・ Date.today.day => 1日
+
+    # 今日の曜日を取得
+    today_wday = wdays[@todays_date.wday]
 
     @week_days = []
 
@@ -35,9 +34,18 @@ class CalendarsController < ApplicationController
       plans.each do |plan|
         today_plans.push(plan.plan) if plan.date == @todays_date + x
       end
-      days = { :month => (@todays_date + x).month, :date => (@todays_date+x).day, :plans => today_plans}
+      wday_num = (@todays_date + x).wday % 7 # 添字が7以上にならないようにする
+
+      days = {
+        month: (@todays_date + x).month,
+        date: (@todays_date + x).day,
+        plans: today_plans,
+        wday: wdays[wday_num] # wdaysから曜日の値を取り出す
+      }
       @week_days.push(days)
     end
 
+    # 今日の曜日をビューで使えるようにインスタンス変数に保存
+    @today_wday = today_wday
   end
 end
