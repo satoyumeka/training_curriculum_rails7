@@ -2,7 +2,7 @@ class CalendarsController < ApplicationController
 
   # １週間のカレンダーと予定が表示されるページ
   def index
-    getWeek
+    set_week_days
     @plan = Plan.new
   end
 
@@ -18,8 +18,10 @@ class CalendarsController < ApplicationController
     params.require(:calendars).permit(:date, :plan)
   end
 
+
   def getWeek
     wdays = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)']
+
     @todays_date = Date.today
 
     # 今日の曜日を取得
@@ -34,6 +36,7 @@ class CalendarsController < ApplicationController
       plans.each do |plan|
         today_plans.push(plan.plan) if plan.date == @todays_date + x
       end
+
       wday_num = (@todays_date + x).wday % 7 # 添字が7以上にならないようにする
 
       days = {
@@ -47,5 +50,6 @@ class CalendarsController < ApplicationController
 
     # 今日の曜日をビューで使えるようにインスタンス変数に保存
     @today_wday = today_wday
+
   end
 end
